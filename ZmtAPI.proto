@@ -1,0 +1,150 @@
+syntax = "proto2";
+package ***;
+
+// 版本号信息
+message Version {
+    optional uint32 major = 1[default = 0]; // 必填！
+    optional uint32 minor = 2[default = 0]; // 选填！
+    optional uint32 micro = 3[default = 0]; // 选填！
+};
+
+// 唯一用户标识，必需使用明文，必需按要求填写，具体填写指导详见接口说明文档
+message UdId {
+    optional string imei = 1[default = ""];  // Android手机设备的IMEI，格式要求[0-9a-fA-F]{14,15}
+    optional string mac = 2[default = ""];  // Android非手机设备的WiFi网卡MAC地址，格式要求[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}:[0-9a-fA-F]{2}
+    optional string android_id = 3[default = ""]; //必填！Android手机设备系统ID，格式要求[0-9A-Za-z]{16}
+};
+
+// 二维尺寸信息
+message Size {
+    optional uint32 width = 1[default = 0];  // 必填！宽度
+    optional uint32 height = 2[default = 0];  // 必填！高度
+};
+
+// 设备信息
+message Device {
+    // 设备类型
+    enum DeviceType {
+        PHONE = 1;  // 手机，含iTouch
+        TABLET = 2;  // 平板
+        SMART_TV = 3;  // 智能电视
+        OUTDOOR_SCREEN = 4;  // 户外屏幕
+    };
+    // 操作系统类型
+    enum OsType {
+        ANDROID = 1;  // Android
+        IOS = 2;  // iOS
+    };
+    optional DeviceType device_type = 1;  // 必填！设备类型    PHONE = 1;  // 手机，含iTouch, TABLET = 2;  // 平板
+    optional OsType os_type = 2;  // 必填！操作系统类型 ANDROID = 1;  // Android  IOS = 2;  // iOS
+    optional Version os_version = 3;  // 必填！操作系统版本
+    optional bytes vendor = 4[default = ""];  // 必填！设备厂商名称，中文需要UTF-8编码
+    optional bytes model = 5[default = ""];  // 必填！设备型号，中文需要UTF-8编码
+    optional UdId udid = 6;  // 必填！唯一设备标识，必需按要求填写
+    optional Size screen_size = 7; // 必填！设备屏幕宽高
+};
+
+// 网络环境信息
+message Network {
+    // 网络连接类型
+    enum ConnectionType {
+        CONNECTION_UNKNOWN = 0; // 无法探测当前网络状态
+        CELL_UNKNOWN = 1; // 蜂窝数据接入，未知网络类型
+        CELL_2G = 2; // 蜂窝数据2G网络
+        CELL_3G = 3; // 蜂窝数据3G网络
+        CELL_4G = 4; // 蜂窝数据4G网络
+        CELL_5G = 5; // 蜂窝数据5G网络
+        WIFI = 100; // Wi-Fi网络接入
+        ETHERNET = 101; // 以太网接入
+        NEW_TYPE = 999;  // 未知新类型
+    };
+    // 移动运营商类型
+    enum OperatorType {
+        UNKNOWN_OPERATOR = 0; // 未知的运营商
+        CHINA_MOBILE = 1; // 中国移动
+        CHINA_TELECOM = 2; // 中国电信
+        CHINA_UNICOM = 3; // 中国联通
+        OTHER_OPERATOR = 99; // 其他运营商
+    };
+    optional string ipv4 = 1;  // 必填！用户设备的公网IPv4地址，服务器对接必填，格式要求：255.255.255.255
+    optional ConnectionType connection_type = 2;  // 必填！网络连接类型，用于判断网速
+    optional OperatorType operator_type = 3;  // 必填！移动运营商类型，用于运营商定向广告
+    optional string cellular_id = 4;  // 选填！当前连接的运营商基站ID，用于快速用户定位
+};
+
+// 广告位信息
+message AdSlot {
+    optional uint32 type = 1;  // 必填！广告为类型 0 随意  1 图片  2视频
+    optional Size adslot_size = 2;  // 必填！广告位尺寸
+    optional uint32 duration = 3; // 选填,时长
+
+};
+
+message MapFieldEntry {
+  required string key = 1;
+  optional string value = 2;
+};
+
+// GPS信息
+message Gps {
+    // GPS坐标类型
+    enum CoordinateType {
+        WGS84 = 1;  // 全球卫星定位系统坐标系
+        GCJ02 = 2;  // 国家测绘局坐标系
+        BD09 = 3;  // 百度坐标系
+    };
+    optional CoordinateType coordinate_type = 1;  // 必填！坐标类型
+    optional double longitude = 2;  // 必填！经度
+    optional double latitude = 3;  // 必填！纬度
+};
+
+//广告请求
+message ZmAdRequest {
+    optional string request_id = 1;  // 必填！接入方自定义请求ID，[a-zA-Z0-9]{32}
+    optional string screen_id = 2;  // 必填！接入方自定义请求ID
+    optional string channel_id = 3;  // 必填！接入方自定义请求ID
+    optional string token = 4;  // 必填！身份认证令牌
+    optional Device device = 5;  // 必填！设备信息
+    optional Network network = 6;  // 必填！网络环境信息
+    optional AdSlot adslot = 7;  // 必填！广告位信息
+    repeated MapFieldEntry ext = 8;//选填扩展参数
+    optional Gps gps = 9;//选填,gps信息
+    }
+
+//广告响应
+message ZmAdResponse {
+    optional string request_id = 1;     // 必填！接入方自定义请求ID，[a-zA-Z0-9]{32}
+    optional string screen_id = 2;      //必填，屏id
+    optional string channel_id = 3;     //必填，渠道id
+    repeated string win_notice_url = 4; //必填
+    repeated AdTracking ad_tracking = 5;
+    optional string material_src = 6;   //必填，物料地址
+    optional uint32 material_width = 7; //必填，物料宽度
+    optional uint32 material_height = 8;//必填，物料高度
+    optional uint32 expiration_time = 9;// 广告清单过期时间戳，单位秒
+    optional uint32 creative_type = 10;  // 物料类型，1-图片，2-视频
+    optional string file_md5 = 11;//物料文件的MD5
+    optional uint32 duration = 12[default = 0];//视频物料播放时长
+    required uint32 error_code = 13 [default = 0];//错误代码 0-正常
+};
+// 广告效果监控
+message AdTracking {    
+    optional string tracking_event = 1;  // 事件类型
+    repeated string tracking_url = 2; // 监控url列表  
+};
+// 心跳
+message Heartbeat {
+    optional string request_id = 1;     // 必填！接入方自定义请求ID，[a-zA-Z0-9]{32}
+    optional string screen_id = 2;      //必填，屏id
+    optional string channel_id = 3;     //必填，渠道id
+    optional string token = 4; // 必填！身份认证令牌
+    optional uint64 timestamp = 5; // 时间戳 unix时间戳
+};
+// 截图请求
+message Screenshot {
+    optional bytes img_bytes = 1[default = ""];  // 图片字节数组
+    optional string request_id = 2[default = ""];  // 请求id
+    optional string screen_id = 3[default = ""]; // 屏id
+    optional string channel_id = 4[default = ""]; // 渠道id
+    optional string token = 5[default = ""]; // 签名信息
+};

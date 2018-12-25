@@ -1,0 +1,38 @@
+{
+	"request_id": "b8ffe828cadf40be995b4b5188cbfb49",
+	"screen_id": "10302002",
+	"channel_id": "test",
+	"token": "8UQ8JSTzaE35M5TWsawnJWWfDfjo5ZN2V5JlZAR2CCMzV30lVzOWmwd-RDJMUxVX",
+	"device": {
+		"device_type": "PHONE",
+		"os_type": "ANDROID",
+		"os_version": {
+			"major": 4,
+			"minor": 4,
+			"micro": 4
+		},
+		"vendor": "rockchip",
+		"model": "rk3188",
+		"udid": {
+			"imei": "357789049271270",
+			"mac": "00:25:E1:05:00:A4",
+			"android_id": "3a717c76d46db29c"
+		},
+		"screen_size": {
+			"width": 1080,
+			"height": 1920
+		}
+	},
+	"network": {
+		"ipv4": "192.168.149.1",
+		"connection_type": "CELL_4G",
+		"operator_type": "CHINA_MOBILE"
+	},
+	"adslot": {
+		"type": 1,
+		"adslot_size": {
+			"width": 1080,
+			"height": 1920
+		}
+	}
+}
