@@ -28,7 +28,6 @@ public class AdService {
 
 	public static ZmtAPIV3.ZmAdResponse sendPost(String url, byte[] params) {
 		BufferedOutputStream out = null;
-		BufferedReader br = null;
 		try {
 			URL realURL = new URL(url);
 			HttpURLConnection conn = (HttpURLConnection) realURL.openConnection();
@@ -41,20 +40,11 @@ public class AdService {
 			// 发送请求参数
 			out.write(params);
 			out.flush();
-			InputStream inputStream = conn.getInputStream();
-			byte[] responseByte = inputStreamTOByte(inputStream);
-			if (responseByte.length > 0) {
-				return ZmtAPIV3.ZmAdResponse.parseFrom(responseByte);
-			} else {
-				return null;
-			}
+		        return ZmtAPIV3.ZmAdResponse.parseFrom(conn.getInputStream());
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
 			try {
-				if (br != null) {
-					br.close();
-				}
 				if (out != null) {
 					out.close();
 				}
@@ -64,16 +54,6 @@ public class AdService {
 		}
 		return null;
 	}
-
-	private static byte[] inputStreamTOByte(InputStream in) throws IOException {
-		ByteArrayOutputStream outStream = new ByteArrayOutputStream();
-		byte[] data = new byte[1024];
-		int count = -1;
-		while ((count = in.read(data, 0, 1024)) != -1)
-			outStream.write(data, 0, count);
-		return outStream.toByteArray();
-	}
-
 
 }
 
